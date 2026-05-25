@@ -20,19 +20,37 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Invalid payload: classes must be an array' }, { status: 400 });
     }
 
-    const publicDir = path.join(process.cwd(), 'public');
-    const classesFilePath = path.join(publicDir, 'classes.json');
+    const payloadStr = JSON.stringify(classes, null, 2);
+    
+    // Create a timestamped backup URL
+    const envSegment = process.env.NODE_ENV === 'production' ? 'prod' : 'dev';
+    const now = new Date();
+    const timestamp = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}-${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}`;
+    const backupUrl = `https://cdn.ccdrivingschool.com/${envSegment}/classes.${timestamp}.json`;
+    const mainUrl = `https://cdn.ccdrivingschool.com/${envSegment}/classes.json`;
 
-    // Create a backup of the existing file
-    if (fs.existsSync(classesFilePath)) {
-      const now = new Date();
-      const timestamp = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}-${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}`;
-      const backupFilePath = path.join(publicDir, `classes.backup-${timestamp}.json`);
-      fs.copyFileSync(classesFilePath, backupFilePath);
+    // 1. Upload backup via PUT
+    const backupRes = await fetch(backupUrl, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: payloadStr,
+    });
+
+    if (!backupRes.ok) {
+      console.error(`Backup to CDN failed: ${backupRes.status} ${backupRes.statusText}`);
+      // Proceeding to attempt main file anyway, though this indicates an issue.
     }
 
-    // Write the new classes to the file
-    fs.writeFileSync(classesFilePath, JSON.stringify(classes, null, 2), 'utf-8');
+    // 2. Upload main file via PUT
+    const mainRes = await fetch(mainUrl, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: payloadStr,
+    });
+
+    if (!mainRes.ok) {
+      throw new Error(`Failed to update main classes.json on CDN: ${mainRes.status} ${mainRes.statusText}`);
+    }
 
     // Revalidate the classes page so it updates immediately
     revalidatePath('/classes');

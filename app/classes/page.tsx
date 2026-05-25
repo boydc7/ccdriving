@@ -28,17 +28,15 @@ interface CourseClass {
   finalTest: {
     date: string;
     time: string;
-  };
-}
-
 async function getClasses(): Promise<CourseClass[]> {
-  // Use environment variable or default to local public JSON file
-  const jsonUrl = process.env.CLASSES_JSON_URL || 'http://localhost:3000/classes.json';
-  
+  const envSegment = process.env.NODE_ENV === 'production' ? 'prod' : 'dev';
+  const cdnUrl = `https://cdn.ccdrivingschool.com/${envSegment}/classes.json`;
   try {
-    const res = await fetch(jsonUrl, { next: { revalidate: 3600 } });
+    // Add a random query parameter to bypass cache during fetch if needed, 
+    // or rely on next: { revalidate }
+    const res = await fetch(cdnUrl, { next: { revalidate: 3600 } });
     if (!res.ok) {
-      throw new Error('Failed to fetch classes');
+      throw new Error(`Failed to fetch classes from CDN: ${res.status} ${res.statusText}`);
     }
     return res.json();
   } catch (error) {

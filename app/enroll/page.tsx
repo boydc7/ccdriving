@@ -43,7 +43,8 @@ export default function EnrollPage() {
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    fetch('/classes.json?' + new Date().getTime())
+    const envSegment = process.env.NODE_ENV === 'production' ? 'prod' : 'dev';
+    fetch(`https://cdn.ccdrivingschool.com/${envSegment}/classes.json?` + new Date().getTime())
       .then(res => res.json())
       .then(data => {
         setCourses(data);
