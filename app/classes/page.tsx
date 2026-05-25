@@ -28,6 +28,9 @@ interface CourseClass {
   finalTest: {
     date: string;
     time: string;
+  };
+}
+
 async function getClasses(): Promise<CourseClass[]> {
   const envSegment = process.env.NODE_ENV === 'production' ? 'prod' : 'dev';
   const cdnUrl = `https://cdn.ccdrivingschool.com/${envSegment}/classes.json`;

@@ -26,7 +26,7 @@ export async function POST(request: Request) {
     const envSegment = process.env.NODE_ENV === 'production' ? 'prod' : 'dev';
     const now = new Date();
     const timestamp = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}-${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}`;
-    const backupUrl = `https://cdn.ccdrivingschool.com/${envSegment}/classes.${timestamp}.json`;
+    const backupUrl = `https://cdn.ccdrivingschool.com/${envSegment}/backup/classes.${timestamp}.json`;
     const mainUrl = `https://cdn.ccdrivingschool.com/${envSegment}/classes.json`;
 
     // 1. Upload backup via PUT
