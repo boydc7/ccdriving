@@ -1,0 +1,241 @@
+.pageContainer {
+  padding-bottom: 6rem;
+}
+
+.headerBanner {
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  padding: 3rem 0 8rem;
+  color: white;
+  text-align: center;
+}
+
+.pageTitle {
+  font-size: 3.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.mainContent {
+  margin-top: -5rem; /* overlap header */
+  position: relative;
+  z-index: 10;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 992px) {
+  .grid {
+    grid-template-columns: 350px 1fr;
+    align-items: start;
+  }
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.profileCard {
+  text-align: center;
+  padding: 2.5rem;
+}
+
+.imageContainer {
+  position: relative;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  margin: 0 auto 1.5rem;
+  overflow: hidden;
+  border: 4px solid var(--card-bg);
+  box-shadow: var(--shadow-md);
+  background-color: var(--bg-secondary);
+}
+
+.name {
+  font-size: 2rem;
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+}
+
+.title {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.credentialsCard {
+  padding: 2rem;
+  background-color: var(--card-bg);
+  border-top: 4px solid var(--accent);
+}
+
+.credentialsTitle {
+  font-size: 1.25rem;
+  margin-bottom: 1.5rem;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.credentialsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.credentialsList li {
+  position: relative;
+  padding-left: 2rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.credentialsList li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--accent);
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+
+.sidebarPhotoCard {
+  padding: 1.5rem;
+  background-color: var(--card-bg);
+}
+
+.sidebarPhoto {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+}
+
+.bioCard {
+  padding: 2.5rem;
+}
+
+@media (min-width: 768px) {
+  .bioCard {
+    padding: 3.5rem;
+  }
+}
+
+.bioCard h2 {
+  font-size: 1.75rem;
+  color: var(--primary);
+  margin-bottom: 1.5rem;
+  position: relative;
+  padding-bottom: 0.75rem;
+}
+
+.bioCard h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 4px;
+  background-color: var(--accent);
+  border-radius: 2px;
+}
+
+.sectionDivider {
+  margin-top: 4rem;
+}
+
+.textBlock p {
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
+}
+
+.textBlock p:last-child {
+  margin-bottom: 0;
+}
+
+.inlinePhotoWide {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 7;
+  border-radius: 16px;
+  overflow: hidden;
+  margin: 2.5rem 0;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border);
+}
+
+.inlinePhotoSplit {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin: 2.5rem 0;
+}
+
+@media (min-width: 640px) {
+  .inlinePhotoSplit {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.splitPhoto {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border);
+}
+
+.familyBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+@media (min-width: 1200px) {
+  .familyBlock {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+  .familyText {
+    flex: 1.2;
+  }
+  .familyImageContainer {
+    flex: 1;
+  }
+}
+
+.familyText p {
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  line-height: 1.8;
+}
+
+.familyImageContainer {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border);
+}

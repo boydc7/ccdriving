@@ -1,0 +1,217 @@
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: var(--nav-height);
+  display: flex;
+  align-items: center;
+}
+
+.navContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+}
+
+.logoIcon {
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(56, 189, 248, 0.1);
+  padding: 8px;
+  border-radius: 10px;
+}
+
+.logoTextContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.logoLine1 {
+  font-weight: 900;
+  font-size: 1.1rem;
+  line-height: 1.1;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.02em;
+}
+
+.logoLine2 {
+  font-weight: 600;
+  font-size: 0.75rem;
+  line-height: 1;
+  color: var(--text-secondary);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: 0.1rem;
+}
+
+@media (min-width: 768px) {
+  .logoLine1 {
+    font-size: 1.35rem;
+  }
+  .logoLine2 {
+    font-size: 0.85rem;
+  }
+  .logoIcon {
+    padding: 10px;
+  }
+  .logoIcon svg {
+    width: 32px !important;
+    height: 32px !important;
+  }
+}
+
+.desktopMenu {
+  display: none;
+  align-items: center;
+  gap: 2rem;
+}
+
+.navLinksGroup {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.rightActions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.enrollBtn {
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: white;
+  border-radius: 9999px;
+  padding: 0.5rem 1.5rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-decoration: none;
+  box-shadow: 0 4px 14px 0 rgba(37, 99, 235, 0.35);
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  letter-spacing: 0.02em;
+}
+
+.enrollBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.45);
+  background: linear-gradient(135deg, #1e40af, var(--primary));
+  color: white;
+}
+
+.navLink {
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  position: relative;
+  padding: 0.5rem 0;
+}
+
+.navLink:hover {
+  color: var(--primary);
+}
+
+.navLink::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: var(--primary);
+  transition: width 0.3s ease;
+}
+
+.navLink:hover::after,
+.navLink.active::after {
+  width: 100%;
+}
+
+.navLink.active {
+  color: var(--primary);
+}
+
+.mobileControls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.mobileControls .enrollBtn {
+  padding: 0.4rem 1.25rem;
+  font-size: 0.85rem;
+  box-shadow: 0 2px 10px rgba(37, 99, 235, 0.3);
+}
+
+.menuBtn {
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobileMenu {
+  position: absolute;
+  top: var(--nav-height);
+  left: 0;
+  width: 100%;
+  background-color: var(--bg-color);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 0;
+  box-shadow: var(--shadow-md);
+}
+
+.mobileNavLink {
+  padding: 1rem 2rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  border-left: 4px solid transparent;
+}
+
+.mobileNavLink:hover,
+.mobileNavLink.active {
+  background-color: var(--bg-secondary);
+  color: var(--primary);
+  border-left-color: var(--primary);
+}
+
+.mobileThemeToggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  border-top: 1px solid var(--border);
+  margin-top: 0.5rem;
+}
+
+@media (min-width: 768px) {
+  .desktopMenu {
+    display: flex;
+  }
+  .mobileControls {
+    display: none;
+  }
+  .mobileMenu {
+    display: none;
+  }
+}

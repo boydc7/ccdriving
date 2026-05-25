@@ -1,0 +1,101 @@
+.header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.headerIcon {
+  color: var(--primary);
+  margin-bottom: 1.5rem;
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.contentCard {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 3rem;
+}
+
+.introAlert {
+  display: flex;
+  gap: 1rem;
+  background-color: rgba(37, 99, 235, 0.05);
+  border: 1px solid rgba(37, 99, 235, 0.2);
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 3rem;
+  color: var(--text-primary);
+}
+
+.alertIcon {
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.introAlert p {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.section {
+  margin-bottom: 3rem;
+}
+
+.section:last-of-type {
+  margin-bottom: 2rem;
+}
+
+.section h2 {
+  font-size: 1.5rem;
+  color: var(--primary);
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.section ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.section li {
+  position: relative;
+  padding-left: 2rem;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+.section li::before {
+  content: '•';
+  position: absolute;
+  left: 0.5rem;
+  color: var(--accent);
+  font-size: 1.5rem;
+  line-height: 1;
+  top: -2px;
+}
+
+.textBlock {
+  color: var(--text-primary);
+  line-height: 1.7;
+  padding-left: 0.5rem;
+}
+
+.acknowledgment {
+  background-color: var(--bg-secondary);
+  padding: 1.5rem;
+  border-radius: 12px;
+  border-left: 4px solid var(--primary);
+  margin-top: 3rem;
+}
+
+.acknowledgment p {
+  margin-bottom: 0;
+  color: var(--text-secondary);
+}
