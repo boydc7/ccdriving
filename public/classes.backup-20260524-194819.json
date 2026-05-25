@@ -39,7 +39,7 @@
   {
     "id": "2",
     "name": "August 2026 Course",
-    "isFull": true,
+    "isFull": false,
     "startDate": "2026-08-03",
     "endDate": "2026-08-27",
     "orientation": {

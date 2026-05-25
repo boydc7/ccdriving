@@ -2,7 +2,7 @@
   {
     "id": "1",
     "name": "July 2026 Morning Course",
-    "isFull": false,
+    "isFull": true,
     "startDate": "2026-07-06",
     "endDate": "2026-07-30",
     "orientation": {

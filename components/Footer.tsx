@@ -28,8 +28,8 @@ export default function Footer() {
         
         <div className={styles.footerContact}>
           <h4>Contact Info</h4>
+          <p><Link href="/contact" style={{ fontWeight: 'bold', color: 'var(--primary)' }}>Email Us!</Link></p>
           <p>Phone: <a href="tel:207-363-2042">207-363-2042</a></p>
-          <p>Email: <a href="mailto:info@ccdrivingschool.com">info@ccdrivingschool.com</a></p>
           <p>7 Sunny Crest Road<br />York, ME 03909</p>
         </div>
       </div>

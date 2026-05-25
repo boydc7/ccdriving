@@ -75,6 +75,21 @@
   color: var(--primary);
 }
 
+/* Validation styles */
+.wasValidated input:invalid,
+.wasValidated select:invalid,
+.wasValidated textarea:invalid {
+  border-color: #ef4444;
+  background-color: #fef2f2;
+}
+
+.wasValidated input:invalid:focus,
+.wasValidated select:invalid:focus,
+.wasValidated textarea:invalid:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+}
+
 .successMessage {
   margin-top: 1.5rem;
   padding: 1rem;
