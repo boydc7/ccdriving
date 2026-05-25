@@ -82,44 +82,55 @@ export default function ContactPage() {
         {/* Contact Form */}
         <div className={`card ${styles.formCard} fade-in`} style={{ animationDelay: '0.2s' }}>
           <h2>Send a Message</h2>
-          <form onSubmit={handleSubmit} className={hasSubmitted ? styles.wasValidated : ''}>
-            <div className="form-group">
-              <label htmlFor="name" className="form-label">Full Name <span style={{color: 'red'}}>*</span></label>
-              <input type="text" id="name" name="name" className="form-input" required />
+          
+          {status === 'success' ? (
+            <div className={styles.successMessage}>
+              <div style={{ textAlign: 'center', padding: '2rem 1rem' }}>
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--primary)', margin: '0 auto 1rem auto' }}>
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                <h3>Message Sent!</h3>
+                <p style={{ marginTop: '0.5rem', color: 'var(--text-secondary)' }}>{message}</p>
+              </div>
             </div>
-            
-            <div className="form-group">
-              <label htmlFor="email" className="form-label">Email Address <span style={{color: 'red'}}>*</span></label>
-              <input type="email" id="email" name="email" className="form-input" pattern="[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}" title="Please provide a valid email address" required />
-            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className={hasSubmitted ? styles.wasValidated : ''}>
+              <div className="form-group">
+                <label htmlFor="name" className="form-label">Full Name <span style={{color: 'red'}}>*</span></label>
+                <input type="text" id="name" name="name" className="form-input" required />
+              </div>
+              
+              <div className="form-group">
+                <label htmlFor="email" className="form-label">Email Address <span style={{color: 'red'}}>*</span></label>
+                <input type="email" id="email" name="email" className="form-input" pattern="[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}" title="Please provide a valid email address" required />
+              </div>
 
-            <div className="form-group">
-              <label htmlFor="phone" className="form-label">Phone Number (Optional)</label>
-              <input type="tel" id="phone" name="phone" className="form-input" value={phone} onChange={handlePhoneChange} placeholder="(123) 456-7890" pattern="[(][0-9]{3}[)] [0-9]{3}-[0-9]{4}" title="If providing a phone number, it must be a valid 10-digit number" maxLength={14} />
-            </div>
-            
-            <div className="form-group">
-              <label htmlFor="message" className="form-label">Message <span style={{color: 'red'}}>*</span></label>
-              <textarea id="message" name="message" className="form-textarea" required></textarea>
-            </div>
-            
-            <button 
-              type="submit" 
-              className="btn btn-primary" 
-              style={{ width: '100%' }}
-              disabled={status === 'loading'}
-              onClick={() => setHasSubmitted(true)}
-            >
-              {status === 'loading' ? 'Sending...' : 'Send Message'}
-            </button>
-            
-            {status === 'success' && (
-              <div className={styles.successMessage}>{message}</div>
-            )}
-            {status === 'error' && (
-              <div className={styles.errorMessage}>{message}</div>
-            )}
-          </form>
+              <div className="form-group">
+                <label htmlFor="phone" className="form-label">Phone Number (Optional)</label>
+                <input type="tel" id="phone" name="phone" className="form-input" value={phone} onChange={handlePhoneChange} placeholder="(123) 456-7890" pattern="[(][0-9]{3}[)] [0-9]{3}-[0-9]{4}" title="If providing a phone number, it must be a valid 10-digit number" maxLength={14} />
+              </div>
+              
+              <div className="form-group">
+                <label htmlFor="message" className="form-label">Message <span style={{color: 'red'}}>*</span></label>
+                <textarea id="message" name="message" className="form-textarea" required></textarea>
+              </div>
+              
+              <button 
+                type="submit" 
+                className="btn btn-primary" 
+                style={{ width: '100%' }}
+                disabled={status === 'loading'}
+                onClick={() => setHasSubmitted(true)}
+              >
+                {status === 'loading' ? 'Sending...' : 'Send Message'}
+              </button>
+              
+              {status === 'error' && (
+                <div className={styles.errorMessage}>{message}</div>
+              )}
+            </form>
+          )}
         </div>
       </div>
     </div>
