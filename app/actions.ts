@@ -133,3 +133,27 @@ Additional Info: ${additionalInfo || 'None'}
     return { error: 'Failed to submit enrollment. Please try again later.' };
   }
 }
+
+import { CourseClass } from '@/lib/classes';
+
+export async function fetchClasses(): Promise<CourseClass[]> {
+  const envSegment = process.env.NODE_ENV === 'production' ? 'prod' : 'dev';
+  const cb = new Date().getTime();
+  const cdnUrl = `https://cdn.ccdrivingschool.com/${envSegment}/classes.json?cb=${cb}`;
+  
+  try {
+    const res = await fetch(cdnUrl, { cache: 'no-store' });
+    if (!res.ok) {
+      throw new Error(`Failed to fetch classes from CDN: ${res.status} ${res.statusText}`);
+    }
+    return res.json();
+  } catch (error) {
+    console.error('Error loading classes:', error);
+    return []; // Return empty array on failure so page still loads
+  }
+}
+
+export async function verifyPassword(password: string): Promise<boolean> {
+  if (!process.env.ADMIN_PASSWORD) return false;
+  return password === process.env.ADMIN_PASSWORD;
+}

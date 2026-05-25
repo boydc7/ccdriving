@@ -7,54 +7,15 @@ export const metadata = {
   description: 'View the schedule for upcoming driver\'s education courses in Southern Maine.',
 };
 
-// Types for the JSON data
-interface InstructionalClass {
-  date: string;
-  time: string;
-  type: 'in-person' | 'virtual';
-}
-
-interface CourseClass {
-  id: string;
-  name?: string;
-  isFull: boolean;
-  startDate: string;
-  endDate: string;
-  orientation: {
-    date: string;
-    time: string;
-  };
-  instructionalClasses: InstructionalClass[];
-  finalTest: {
-    date: string;
-    time: string;
-  };
-}
-
-async function getClasses(): Promise<CourseClass[]> {
-  const envSegment = process.env.NODE_ENV === 'production' ? 'prod' : 'dev';
-  const cdnUrl = `https://cdn.ccdrivingschool.com/${envSegment}/classes.json`;
-  try {
-    // Add a random query parameter to bypass cache during fetch if needed, 
-    // or rely on next: { revalidate }
-    const res = await fetch(cdnUrl, { next: { revalidate: 3600 } });
-    if (!res.ok) {
-      throw new Error(`Failed to fetch classes from CDN: ${res.status} ${res.statusText}`);
-    }
-    return res.json();
-  } catch (error) {
-    console.error('Error loading classes:', error);
-    return []; // Return empty array on failure so page still loads
-  }
-}
+import { fetchClasses } from '@/app/actions';
 
 function formatDate(dateString: string) {
-  const options: Intl.DateTimeFormatOptions = { weekday: 'short', month: 'short', day: 'numeric' };
+  const options: Intl.DateTimeFormatOptions = { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' };
   return new Date(dateString).toLocaleDateString('en-US', options);
 }
 
 export default async function ClassesPage() {
-  const classes = await getClasses();
+  const classes = await fetchClasses();
 
   return (
     <div className="container" style={{ padding: '3rem 2rem 4rem 2rem' }}>
@@ -72,7 +33,7 @@ export default async function ClassesPage() {
       ) : (
         <div className={styles.classesList}>
           {classes.map((course, index) => {
-            const courseName = course.name || `${new Date(course.startDate).toLocaleString('en-US', { month: 'long', year: 'numeric' })} Course`;
+            const courseName = course.name || `${new Date(course.startDate).toLocaleString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' })} Course`;
             
             return (
               <div 

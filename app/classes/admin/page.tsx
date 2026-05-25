@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { Trash2, Download, Save, X, Plus } from 'lucide-react';
+import { fetchClasses, verifyPassword } from '@/app/actions';
 import styles from './admin.module.css';
 
 interface InstructionalClass {
@@ -111,13 +112,10 @@ export default function AdminPage() {
   // Fetch initial data
   const loadClasses = async () => {
     try {
-      const res = await fetch('/classes.json?' + new Date().getTime());
-      if (res.ok) {
-        const data = await res.json();
-        setClasses(data);
-        setOriginalClasses(JSON.parse(JSON.stringify(data)));
-        setHasUnsavedChanges(false);
-      }
+      const data = await fetchClasses();
+      setClasses(data);
+      setOriginalClasses(JSON.parse(JSON.stringify(data)));
+      setHasUnsavedChanges(false);
     } catch (err) {
       console.error('Failed to load classes', err);
     }
@@ -151,10 +149,16 @@ export default function AdminPage() {
     }
   }, [classes, originalClasses, isAuthenticated]);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password) {
-      setIsAuthenticated(true);
+      const isValid = await verifyPassword(password);
+      if (isValid) {
+        setIsAuthenticated(true);
+        setError('');
+      } else {
+        setError('Incorrect password');
+      }
     }
   };
 

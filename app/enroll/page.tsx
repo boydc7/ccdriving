@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { CheckCircle2 } from 'lucide-react';
-import { sendEnrollmentEmail } from '@/app/actions';
+import { sendEnrollmentEmail, fetchClasses } from '@/app/actions';
 import styles from './enroll.module.css';
 
 const US_STATES = [
@@ -26,7 +26,7 @@ function formatPhoneNumber(value: string) {
 
 function formatDate(dateString: string) {
   if (!dateString) return '';
-  const options: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric', year: 'numeric' };
+  const options: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' };
   // Add timezone offset to prevent day shift
   const dateObj = new Date(dateString + 'T12:00:00');
   return dateObj.toLocaleDateString('en-US', options);
@@ -43,9 +43,7 @@ export default function EnrollPage() {
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    const envSegment = process.env.NODE_ENV === 'production' ? 'prod' : 'dev';
-    fetch(`https://cdn.ccdrivingschool.com/${envSegment}/classes.json?` + new Date().getTime())
-      .then(res => res.json())
+    fetchClasses()
       .then(data => {
         setCourses(data);
         setIsLoaded(true);
