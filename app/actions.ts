@@ -2,6 +2,58 @@
 
 import { transporter, getToEmail } from '@/lib/email';
 
+const HTML_ESCAPES: Record<string, string> = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#39;',
+};
+
+// Form values are interpolated into the email body, so escape them first.
+const esc = (value: unknown) =>
+  String(value ?? '').replace(/[&<>"']/g, (char) => HTML_ESCAPES[char]);
+
+// Matches the date formatting used on the enrollment form (app/enroll/page.tsx).
+const formatDate = (value: string) => {
+  if (!value) return '';
+  const date = new Date(`${value}T12:00:00`);
+  if (isNaN(date.getTime())) return value;
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    timeZone: 'UTC',
+  });
+};
+
+const LABEL_CELL =
+  'font-family:Arial,Helvetica,sans-serif;font-size:11px;line-height:1.35;color:#555555;padding:2px 8px 2px 0;vertical-align:top;white-space:nowrap;';
+const VALUE_CELL =
+  'font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.35;color:#111111;padding:2px 0;vertical-align:top;';
+const SECTION_HEADING =
+  'font-family:Arial,Helvetica,sans-serif;font-size:10px;font-weight:bold;letter-spacing:0.06em;text-transform:uppercase;color:#1e40af;border-bottom:1px solid #c7d2e4;padding-bottom:3px;margin:0 0 6px 0;';
+
+// Compact two-column label/value rows.
+const rows = (pairs: [string, string][]) =>
+  pairs
+    .map(
+      ([label, value]) =>
+        `<tr><td style="${LABEL_CELL}" width="40%">${label}</td><td style="${VALUE_CELL}">${value}</td></tr>`
+    )
+    .join('');
+
+const section = (title: string, body: string) =>
+  `<div style="${SECTION_HEADING}">${title}</div>
+   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">${body}</table>`;
+
+// Full-width stacked block for free-text answers.
+const note = (label: string, value: string) =>
+  `<div style="margin:0 0 6px 0;">
+     <span style="font-family:Arial,Helvetica,sans-serif;font-size:10px;font-weight:bold;letter-spacing:0.04em;text-transform:uppercase;color:#555555;">${label}</span>
+     <div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.4;color:#111111;">${value}</div>
+   </div>`;
+
 export async function sendContactEmail(formData: FormData) {
   const name = formData.get('name') as string;
   const email = formData.get('email') as string;
@@ -19,11 +71,11 @@ export async function sendContactEmail(formData: FormData) {
       subject: `New Contact Form Submission from ${name}`,
       text: `Name: ${name}\nEmail: ${email}\nPhone: ${phone || 'Not provided'}\n\nMessage:\n${message}`,
       html: `<h3>New Contact Form Submission</h3>
-             <p><strong>Name:</strong> ${name}</p>
-             <p><strong>Email:</strong> ${email}</p>
-             <p><strong>Phone:</strong> ${phone || 'Not provided'}</p>
+             <p><strong>Name:</strong> ${esc(name)}</p>
+             <p><strong>Email:</strong> ${esc(email)}</p>
+             <p><strong>Phone:</strong> ${esc(phone || 'Not provided')}</p>
              <p><strong>Message:</strong></p>
-             <p>${message.replace(/\n/g, '<br>')}</p>`,
+             <p>${esc(message).replace(/\n/g, '<br>')}</p>`,
     });
     
     console.log('Message sent: %s', info.messageId);
@@ -63,67 +115,144 @@ export async function sendEnrollmentEmail(formData: FormData) {
     return { error: 'Please fill out all required fields.' };
   }
 
+  const submittedOn = new Date().toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+
+  const studentRows = rows([
+    ['Date of Birth', esc(formatDate(dob))],
+    ['High School', esc(highSchool)],
+    ['Graduation Year', esc(gradYear)],
+    ['Present Class', esc(presentClass)],
+    ['Corrective Eyewear', esc(eyewear)],
+    ['Student Cell', esc(cellPhone || '—')],
+    [
+      'Student Email',
+      studentEmail
+        ? `<a href="mailto:${esc(studentEmail)}" style="color:#1e40af;">${esc(studentEmail)}</a>`
+        : '—',
+    ],
+  ]);
+
+  const contactRows = rows([
+    ['Parent/Guardian', esc(parentName)],
+    ['Address', `${esc(address)}<br>${esc(city)}, ${esc(state)} ${esc(zip)}`],
+    ['Phone', esc(phone)],
+    [
+      'Parent Email',
+      `<a href="mailto:${esc(email)}" style="color:#1e40af;">${esc(email)}</a>`,
+    ],
+    ['Heard About Us', esc(hearAbout || '—')],
+  ]);
+
+  // Only free-text answers that were filled in, so the sheet stays on one page.
+  const notes = [
+    ['Medical Conditions / Medication', medical || 'None reported'],
+    ['Scheduling Contact & Best Time to Call', schedulingContact],
+    ['Student Availability', studentAvailability],
+    ['Additional Information', additionalInfo],
+  ]
+    .filter(([, value]) => value)
+    .map(([label, value]) => note(label, esc(value).replace(/\n/g, '<br>')))
+    .join('');
+
+  const html = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Enrollment — ${esc(studentName)}</title>
+<style>
+  @page { size: letter portrait; margin: 0.5in; }
+  @media print {
+    body { background: #ffffff !important; }
+    .sheet { border: none !important; max-width: 100% !important; }
+    .no-print { display: none !important; }
+    a { color: #111111 !important; text-decoration: none !important; }
+  }
+</style>
+</head>
+<body style="margin:0;padding:0;background:#ffffff;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;background:#ffffff;">
+  <tr><td align="center" style="padding:12px;">
+    <table role="presentation" class="sheet" width="100%" cellpadding="0" cellspacing="0" style="max-width:680px;border:1px solid #d0d5dd;border-collapse:collapse;">
+
+      <tr><td style="padding:8px 14px;border-bottom:2px solid #111111;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
+          <td style="font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:bold;color:#111111;">CCDS Enrollment Form</td>
+          <td align="right" style="font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#555555;">Received ${esc(submittedOn)}</td>
+        </tr></table>
+      </td></tr>
+
+      <tr><td style="padding:8px 14px;border-bottom:1px solid #d0d5dd;background:#f4f6f8;">
+        <div style="font-family:Arial,Helvetica,sans-serif;font-size:17px;font-weight:bold;line-height:1.2;color:#111111;">${esc(studentName)}</div>
+        <div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.4;color:#333333;padding-top:2px;">${esc(selectedCourse)}</div>
+      </td></tr>
+
+      <tr><td style="padding:0;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;"><tr>
+          <td width="50%" valign="top" style="padding:10px 14px;border-right:1px solid #e4e7ec;">
+            ${section('Student', studentRows)}
+          </td>
+          <td width="50%" valign="top" style="padding:10px 14px;">
+            ${section('Parent / Guardian', contactRows)}
+          </td>
+        </tr></table>
+      </td></tr>
+
+      ${
+        notes
+          ? `<tr><td style="padding:10px 14px;border-top:1px solid #e4e7ec;">
+               <div style="${SECTION_HEADING}">Notes</div>
+               ${notes}
+             </td></tr>`
+          : ''
+      }
+
+    </table>
+  </td></tr>
+</table>
+</body>
+</html>`;
+
   try {
     const info = await transporter.sendMail({
       from: process.env.SMTP_FROM || 'gary@ccdrivingschool.com',
       to: getToEmail(),
-      subject: `CCDS Enrollment Form (${studentName})`,
-      text: `
-Student Name: ${studentName}
-DOB: ${dob}
-High School: ${highSchool}
-Grad Year: ${gradYear}
-Present Class: ${presentClass}
-Eyewear: ${eyewear}
-Medical Conditions: ${medical || 'None'}
-
-Parent/Guardian: ${parentName}
-Address: ${address}, ${city}, ${state} ${zip}
-Phone: ${phone}
-Student Cell Phone: ${cellPhone || 'None'}
-Parent Email: ${email}
-Student Email: ${studentEmail || 'None'}
-
-Selected Course: ${selectedCourse}
-Scheduling Contact: ${schedulingContact || 'None'}
-Student Availability: ${studentAvailability || 'None'}
-Heard About Us Via: ${hearAbout || 'None'}
-Additional Info: ${additionalInfo || 'None'}
-      `,
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 650px; margin: 0 auto; color: #333; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-          <div style="background-color: #2563eb; color: #ffffff; padding: 20px; text-align: center;">
-            <h2 style="margin: 0; font-size: 24px;">New Online Enrollment</h2>
-          </div>
-          <div style="padding: 20px;">
-            <table width="100%" cellpadding="12" cellspacing="0" style="border-collapse: collapse;">
-              <tr><td colspan="2" style="background-color: #f8fafc; color: #1e40af; font-size: 16px; border-bottom: 2px solid #bfdbfe;"><strong>Student Information</strong></td></tr>
-              <tr style="border-bottom: 1px solid #f1f5f9;"><td width="35%"><strong>Student Name:</strong></td><td>${studentName}</td></tr>
-              <tr style="border-bottom: 1px solid #f1f5f9;"><td><strong>Date of Birth:</strong></td><td>${dob}</td></tr>
-              <tr style="border-bottom: 1px solid #f1f5f9;"><td><strong>High School:</strong></td><td>${highSchool}</td></tr>
-              <tr style="border-bottom: 1px solid #f1f5f9;"><td><strong>Graduation Year:</strong></td><td>${gradYear}</td></tr>
-              <tr style="border-bottom: 1px solid #f1f5f9;"><td><strong>Present Class:</strong></td><td>${presentClass}</td></tr>
-              <tr style="border-bottom: 1px solid #f1f5f9;"><td><strong>Corrective Eyewear:</strong></td><td>${eyewear}</td></tr>
-              <tr style="border-bottom: 1px solid #f1f5f9;"><td><strong>Medical Conditions:</strong></td><td>${medical || 'None'}</td></tr>
-              
-              <tr><td colspan="2" style="background-color: #f8fafc; color: #1e40af; font-size: 16px; border-bottom: 2px solid #bfdbfe; padding-top: 24px;"><strong>Contact Information</strong></td></tr>
-              <tr style="border-bottom: 1px solid #f1f5f9;"><td width="35%"><strong>Parent/Guardian:</strong></td><td>${parentName}</td></tr>
-              <tr style="border-bottom: 1px solid #f1f5f9;"><td><strong>Address:</strong></td><td>${address}, ${city}, ${state} ${zip}</td></tr>
-              <tr style="border-bottom: 1px solid #f1f5f9;"><td><strong>Phone:</strong></td><td>${phone}</td></tr>
-              <tr style="border-bottom: 1px solid #f1f5f9;"><td><strong>Student Cell Phone:</strong></td><td>${cellPhone || 'None'}</td></tr>
-              <tr style="border-bottom: 1px solid #f1f5f9;"><td><strong>Parent Email:</strong></td><td><a href="mailto:${email}" style="color: #2563eb;">${email}</a></td></tr>
-              <tr style="border-bottom: 1px solid #f1f5f9;"><td><strong>Student Email:</strong></td><td>${studentEmail ? `<a href="mailto:${studentEmail}" style="color: #2563eb;">${studentEmail}</a>` : 'None'}</td></tr>
-              
-              <tr><td colspan="2" style="background-color: #f8fafc; color: #1e40af; font-size: 16px; border-bottom: 2px solid #bfdbfe; padding-top: 24px;"><strong>Course & Additional Info</strong></td></tr>
-              <tr style="border-bottom: 1px solid #f1f5f9;"><td width="35%"><strong>Selected Course:</strong></td><td><strong>${selectedCourse}</strong></td></tr>
-              <tr style="border-bottom: 1px solid #f1f5f9;"><td><strong>Scheduling Contact:</strong></td><td>${schedulingContact || 'None'}</td></tr>
-              <tr style="border-bottom: 1px solid #f1f5f9;"><td><strong>Student Availability:</strong></td><td>${studentAvailability || 'None'}</td></tr>
-              <tr style="border-bottom: 1px solid #f1f5f9;"><td><strong>Heard About Us:</strong></td><td>${hearAbout || 'None'}</td></tr>
-              <tr style="border-bottom: 1px solid #f1f5f9;"><td><strong>Additional Info:</strong></td><td>${additionalInfo || 'None'}</td></tr>
-            </table>
-          </div>
-        </div>
-      `,
+      replyTo: email,
+      subject: `CCDS Enrollment: ${studentName} — ${selectedCourse}`,
+      text: [
+        `CCDS ENROLLMENT FORM — received ${submittedOn}`,
+        '',
+        `${studentName}`,
+        `${selectedCourse}`,
+        '',
+        'STUDENT',
+        `  Date of Birth:      ${formatDate(dob)}`,
+        `  High School:        ${highSchool}`,
+        `  Graduation Year:    ${gradYear}`,
+        `  Present Class:      ${presentClass}`,
+        `  Corrective Eyewear: ${eyewear}`,
+        `  Student Cell:       ${cellPhone || '-'}`,
+        `  Student Email:      ${studentEmail || '-'}`,
+        '',
+        'PARENT / GUARDIAN',
+        `  Name:               ${parentName}`,
+        `  Address:            ${address}, ${city}, ${state} ${zip}`,
+        `  Phone:              ${phone}`,
+        `  Email:              ${email}`,
+        `  Heard About Us:     ${hearAbout || '-'}`,
+        '',
+        'NOTES',
+        `  Medical Conditions: ${medical || 'None reported'}`,
+        ...(schedulingContact ? [`  Scheduling Contact: ${schedulingContact}`] : []),
+        ...(studentAvailability ? [`  Availability:       ${studentAvailability}`] : []),
+        ...(additionalInfo ? [`  Additional Info:    ${additionalInfo}`] : []),
+        '',
+      ].join('\n'),
+      html,
     });
     
     console.log('Enrollment email sent: %s', info.messageId);
