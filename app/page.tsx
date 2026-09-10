@@ -35,6 +35,7 @@ export default function Home() {
                   src="/hero.jpg"
                   alt="Gary Boyd with Coastal Community student driver car"
                   fill
+                  sizes="(min-width: 768px) 300px, (min-width: 500px) 500px, 100vw"
                   style={{ objectFit: 'cover' }}
                   priority
                 />
@@ -44,6 +45,7 @@ export default function Home() {
                   src="/hero2.jpg"
                   alt="Gary Boyd next to the student driver car"
                   fill
+                  sizes="(min-width: 768px) 220px, (min-width: 500px) 500px, 100vw"
                   style={{ objectFit: 'cover', objectPosition: 'center 35%' }}
                   priority
                 />
@@ -53,6 +55,7 @@ export default function Home() {
                   src="/hero3.jpg"
                   alt="Gary Boyd student driver car back"
                   fill
+                  sizes="(min-width: 768px) 200px, (min-width: 500px) 500px, 100vw"
                   style={{ objectFit: 'cover', objectPosition: 'center 35%' }}
                   priority
                 />
@@ -62,6 +65,7 @@ export default function Home() {
                   src="/hero4.jpg"
                   alt="Gary Boyd new photo"
                   fill
+                  sizes="(min-width: 768px) 180px, (min-width: 500px) 500px, 100vw"
                   style={{ objectFit: 'cover', objectPosition: 'center 10%' }}
                   priority
                 />
@@ -71,6 +75,7 @@ export default function Home() {
                   src="/hero5.jpg"
                   alt="Gary Boyd new photo 2"
                   fill
+                  sizes="(min-width: 768px) 260px, (min-width: 500px) 500px, 100vw"
                   style={{ objectFit: 'cover', objectPosition: 'center 20%' }}
                   priority
                 />

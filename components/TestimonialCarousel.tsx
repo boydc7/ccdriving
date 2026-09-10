@@ -5,7 +5,15 @@ import Image from 'next/image';
 import { Quote, ChevronLeft, ChevronRight } from 'lucide-react';
 import styles from './TestimonialCarousel.module.css';
 
-const testimonials = [
+type Testimonial = {
+  text: string;
+  author: string;
+  role: string;
+  image?: string;
+  position?: string;
+};
+
+const testimonials: Testimonial[] = [
   {
     text: "Good involvement with parents... Always felt I knew what was going on. Provided lots of different driving environments; town, highway, and city. Had good communication with kids. I really felt that Gary gave 120% to make the class work for everyone...",
     author: "Ken Hayes",
@@ -26,6 +34,16 @@ const testimonials = [
     role: "Parent",
     image: "/testimonials/kylemartin.jpg",
     position: "center"
+  },
+  {
+    text: "After my daughter had struggled to pass her driving test, Gary worked with her one-on-one and made an enormous difference. His patience, encouragement, and ability to identify exactly what she needed to improve helped rebuild her confidence... She went into her next test feeling prepared and confident -- and she passed!",
+    author: "Jesse Kohler",
+    role: "Parent"
+  },
+  {
+    text: "Gary was a great instructor for my son who needed patience and extra time to learn to drive. I truly believe that Gary respects his students and works with them more like a trusted family friend instead of a customer.",
+    author: "Andrea Murphy",
+    role: "Parent"
   }
 ];
 
@@ -76,13 +94,20 @@ export default function TestimonialCarousel() {
             >
               <div className={`card ${styles.card}`}>
               <div className={styles.imageContainer}>
-                <Image 
-                  src={testimonial.image} 
-                  alt={`Photo for ${testimonial.author}`}
-                  fill
-                  style={{ objectFit: 'cover', objectPosition: testimonial.position }}
-                  priority={index === 0}
-                />
+                {testimonial.image ? (
+                  <Image 
+                    src={testimonial.image} 
+                    alt={`Photo for ${testimonial.author}`}
+                    fill
+                    sizes="(min-width: 768px) 375px, 100vw"
+                    style={{ objectFit: 'cover', objectPosition: testimonial.position }}
+                    priority={index === 0}
+                  />
+                ) : (
+                  <div className={styles.imagePlaceholder} aria-hidden="true">
+                    {testimonial.author.split(' ').map((n) => n[0]).join('')}
+                  </div>
+                )}
               </div>
               <div className={styles.cardContent}>
                 <Quote className={styles.quoteIcon} size={32} />

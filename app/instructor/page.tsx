@@ -26,6 +26,7 @@ export default function InstructorPage() {
                   src="/hero.jpg"
                   alt="Gary Boyd"
                   fill
+                  sizes="220px"
                   style={{ objectFit: 'cover', objectPosition: 'center' }}
                   priority
                 />
@@ -51,7 +52,8 @@ export default function InstructorPage() {
                 <Image 
                   src="/family4.jpg" 
                   alt="Gary Boyd and his wife" 
-                  fill 
+                  fill
+                  sizes="(min-width: 992px) 320px, 100vw"
                   style={{ objectFit: 'cover', objectPosition: 'top' }} 
                 />
               </div>
@@ -72,7 +74,8 @@ export default function InstructorPage() {
                   <Image 
                     src="/family2.jpg" 
                     alt="Gary Boyd with his family" 
-                    fill 
+                    fill
+                    sizes="(min-width: 992px) 640px, 100vw"
                     style={{ objectFit: 'cover', objectPosition: 'center 25%' }} 
                   />
                 </div>
@@ -87,7 +90,8 @@ export default function InstructorPage() {
                     <Image 
                       src="/family3.jpg" 
                       alt="Gary Boyd family portrait" 
-                      fill 
+                      fill
+                      sizes="(min-width: 992px) 310px, (min-width: 640px) 45vw, 100vw"
                       style={{ objectFit: 'cover' }} 
                     />
                   </div>
@@ -95,7 +99,8 @@ export default function InstructorPage() {
                     <Image 
                       src="/family5.jpg" 
                       alt="Gary Boyd family at the harbor" 
-                      fill 
+                      fill
+                      sizes="(min-width: 992px) 310px, (min-width: 640px) 45vw, 100vw"
                       style={{ objectFit: 'cover' }} 
                     />
                   </div>
@@ -114,6 +119,7 @@ export default function InstructorPage() {
                     src="/family.jpg"
                     alt="Gary Boyd with his family"
                     fill
+                    sizes="(min-width: 1200px) 280px, (min-width: 992px) 640px, 100vw"
                     style={{ objectFit: 'cover', objectPosition: 'center 15%' }}
                   />
                 </div>
